@@ -1,5 +1,6 @@
 package com.volmit.catalyst.hosts.v12;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +10,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.volmit.catalyst.api.AbstractChunk;
 import com.volmit.catalyst.api.CatalystHost;
 import com.volmit.catalyst.api.CatalystPacketListener;
 import com.volmit.catalyst.api.ChatMode;
@@ -23,19 +26,150 @@ import com.volmit.catalyst.api.PlayerSettings;
 import com.volmit.catalyst.plugin.CatalystPlugin;
 import com.volmit.catalyst.util.V;
 
+import net.minecraft.server.v1_12_R1.Block;
+import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.EntityHuman.EnumChatVisibility;
 import net.minecraft.server.v1_12_R1.EnumMainHand;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.Packet;
 import net.minecraft.server.v1_12_R1.PacketPlayInSettings;
+import net.minecraft.server.v1_12_R1.PacketPlayOutAnimation;
+import net.minecraft.server.v1_12_R1.PacketPlayOutBlockAction;
+import net.minecraft.server.v1_12_R1.PacketPlayOutBlockBreakAnimation;
+import net.minecraft.server.v1_12_R1.PacketPlayOutBlockChange;
+import net.minecraft.server.v1_12_R1.PacketPlayOutGameStateChange;
+import net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle.EnumTitleAction;
+import net.minecraft.server.v1_12_R1.PacketPlayOutUnloadChunk;
+import net.minecraft.server.v1_12_R1.TileEntity;
 
 public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 {
 	private Map<Player, PlayerSettings> playerSettings = new HashMap<>();
 
 	// START PACKETS
+	@Override
+	public Object packetChunkUnload(int x, int z)
+	{
+		return new PacketPlayOutUnloadChunk(x, z);
+	}
+
+	@Override
+	public Object packetChunkFullSend(Chunk chunk)
+	{
+		return new PacketPlayOutMapChunk(((CraftChunk) chunk).getHandle(), 65535);
+	}
+
+	@Override
+	public Object packetChunkMap(AbstractChunk c, Chunk copyTileEntities)
+	{
+		List<NBTTagCompound> tags = new ArrayList<NBTTagCompound>();
+
+		for(BlockPosition i : ((CraftChunk) copyTileEntities).getHandle().tileEntities.keySet())
+		{
+			TileEntity tile = ((CraftChunk) copyTileEntities).getHandle().tileEntities.get(i);
+			if(c.hasSection(tile.getPosition().getY() >> 4))
+			{
+				NBTTagCompound tag = new NBTTagCompound();
+				tile.save(tag);
+				tags.add(tag);
+			}
+		}
+
+		PacketPlayOutMapChunk m = new PacketPlayOutMapChunk();
+		new V(m).set("a", c.getX());
+		new V(m).set("b", c.getZ());
+		new V(m).set("c", c.getBitMask());
+
+		try
+		{
+			new V(m).set("d", c.write());
+		}
+
+		catch(IllegalStateException | IOException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+
+		new V(m).set("e", tags);
+		new V(m).set("f", c.getBitMask() == 65535);
+
+		return m;
+	}
+
+	@Override
+	public Object packetChunkMap(AbstractChunk c)
+	{
+		List<NBTTagCompound> tags = new ArrayList<NBTTagCompound>();
+		PacketPlayOutMapChunk m = new PacketPlayOutMapChunk();
+		new V(m).set("a", c.getX());
+		new V(m).set("b", c.getZ());
+		new V(m).set("c", c.getBitMask());
+
+		try
+		{
+			new V(m).set("d", c.write());
+		}
+
+		catch(IllegalStateException | IOException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+
+		new V(m).set("e", tags);
+		new V(m).set("f", c.getBitMask() == 65535);
+
+		return m;
+	}
+
+	@Override
+	public Object packetBlockChange(Location block, int blockId, byte blockData)
+	{
+		PacketPlayOutBlockChange p = new PacketPlayOutBlockChange();
+		new V(p).set("a", toBlockPos(block));
+		new V(p).set("b", Block.getByCombinedId(blockId << 4 | (blockData & 15)));
+
+		return p;
+	}
+
+	@Override
+	public Object packetBlockAction(Location block, int action, int param, int blocktype)
+	{
+		PacketPlayOutBlockAction p = new PacketPlayOutBlockAction();
+		new V(p).set("a", toBlockPos(block));
+		new V(p).set("b", action);
+		new V(p).set("c", param);
+		new V(p).set("d", Block.getById(blocktype));
+
+		return p;
+	}
+
+	@Override
+	public Object packetAnimation(int eid, int animation)
+	{
+		PacketPlayOutAnimation p = new PacketPlayOutAnimation();
+		new V(p).set("a", eid);
+		new V(p).set("b", animation);
+
+		return p;
+	}
+
+	@Override
+	public Object packetBlockBreakAnimation(int eid, Location location, byte damage)
+	{
+		return new PacketPlayOutBlockBreakAnimation(eid, toBlockPos(location), damage);
+	}
+
+	@Override
+	public Object packetGameState(int mode, float value)
+	{
+		return new PacketPlayOutGameStateChange(mode, value);
+	}
+
 	@Override
 	public Object packetTitleMessage(String title)
 	{
@@ -71,8 +205,12 @@ public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 	{
 		return new PacketPlayOutTitle(in, stay, out);
 	}
-
 	// END PACKETS
+
+	private BlockPosition toBlockPos(Location location)
+	{
+		return new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	}
 
 	@Override
 	public String getServerVersion()
@@ -179,7 +317,17 @@ public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 	@Override
 	public int getViewDistance(Player p)
 	{
-		return getSettings(p).getViewDistance();
+		try
+		{
+			return getSettings(p).getViewDistance();
+		}
+
+		catch(Throwable e)
+		{
+
+		}
+
+		return Bukkit.getServer().getViewDistance();
 	}
 
 	public boolean isWithin(Chunk center, Chunk check, int viewDistance)

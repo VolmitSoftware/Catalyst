@@ -10,16 +10,170 @@ import org.bukkit.event.Listener;
 
 public interface CatalystHost extends PacketListener, Listener
 {
+	/**
+	 * Constructs a full chunk send packet based off the world, refreshing it if
+	 * there are modifications on the client's end of the chunk.
+	 *
+	 * @param chunk
+	 *            the chunk
+	 * @return the packet
+	 */
+	public Object packetChunkFullSend(Chunk chunk);
+
+	/**
+	 * Send chunk unload
+	 *
+	 * @param x
+	 *            the x
+	 * @param z
+	 *            the z
+	 * @return the packet
+	 */
+	public Object packetChunkUnload(int x, int z);
+
+	/**
+	 * Send a chunk map
+	 *
+	 * @param c
+	 *            the abstract chunk
+	 * @param copyTileEntities
+	 *            uses the reference chunk to copy and send tile entities
+	 * @return the packet
+	 */
+	public Object packetChunkMap(AbstractChunk c, Chunk copyTileEntities);
+
+	/**
+	 * Send a chunk map
+	 *
+	 * @param c
+	 *            the abstract chunk
+	 * @return the packet
+	 */
+	public Object packetChunkMap(AbstractChunk c);
+
+	/**
+	 * Send a block change packet
+	 *
+	 * @param block
+	 *            the block
+	 * @param blockId
+	 *            the block id
+	 * @param blockData
+	 *            the block data
+	 * @return the packet
+	 */
+	public Object packetBlockChange(Location block, int blockId, byte blockData);
+
+	/**
+	 * Send a block action packet https://wiki.vg/Block_Actions
+	 *
+	 * @param block
+	 *            the block
+	 * @param action
+	 *            the action type
+	 * @param param
+	 *            the action parameter
+	 * @param blocktype
+	 *            the block type
+	 * @return the packet
+	 */
+	public Object packetBlockAction(Location block, int action, int param, int blocktype);
+
+	/**
+	 * Send an animation packet as an entity animating
+	 * https://wiki.vg/index.php?title=Protocol&oldid=14204#Animation_.28clientbound.29
+	 *
+	 * @param eid
+	 *            the entity id
+	 * @param animation
+	 *            the animation type
+	 * @return the packet
+	 */
+	public Object packetAnimation(int eid, int animation);
+
+	/**
+	 * Send a block break animation packet. Each entity id can dig another block
+	 * crack at the same time, works like keys.
+	 *
+	 * @param eid
+	 *            the entity breaking the block
+	 * @param location
+	 *            the location
+	 * @param damage
+	 *            the damage 0-9
+	 * @return the packet
+	 */
+	public Object packetBlockBreakAnimation(int eid, Location location, byte damage);
+
+	/**
+	 * Change the game state
+	 * https://wiki.vg/index.php?title=Protocol&oldid=14204#Change_Game_State
+	 *
+	 * @param mode
+	 *            the mode
+	 * @param value
+	 *            the value
+	 * @return the packet
+	 */
+	public Object packetGameState(int mode, float value);
+
+	/**
+	 * Send a title message. You must send the packetTitleTimes after this to
+	 * display it.
+	 *
+	 * @param title
+	 *            the title message
+	 * @return the packet
+	 */
 	public Object packetTitleMessage(String title);
 
+	/**
+	 * Send a subtitle message. You must send the packetTitleTimes after this to
+	 * display it. Subtitles will not display unless a title packet is also sent
+	 * before the times too.
+	 *
+	 * @param subtitle
+	 *            the subtitle message.
+	 * @return the packet
+	 */
 	public Object packetSubtitleMessage(String subtitle);
 
+	/**
+	 * Send an action bar message
+	 *
+	 * @param actionmsg
+	 *            the action message
+	 * @return the packet
+	 */
 	public Object packetActionBarMessage(String actionmsg);
 
+	/**
+	 * Send a title reset packet (times)
+	 *
+	 * @return the packet
+	 */
 	public Object packetResetTitle();
 
+	/**
+	 * Send a clear title packet
+	 *
+	 * @return the packet
+	 */
 	public Object packetClearTitle();
 
+	/**
+	 * Sending packet times displays the last sent title and subtitle. You must send
+	 * either the title only, or the title and subtitle first before sending the
+	 * times.
+	 *
+	 * @param in
+	 *            the fade in time
+	 * @param stay
+	 *            the stay time
+	 * @param out
+	 *            the fade out time
+	 * @return the packet
+	 */
 	public Object packetTimes(int in, int stay, int out);
 
 	/**
