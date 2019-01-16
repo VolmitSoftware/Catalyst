@@ -1,0 +1,4 @@
+name: Catalyst
+version: 1.0
+main: com.volmit.catalyst.plugin.CatalystPlugin
+author: cyberpwn
