@@ -38,15 +38,6 @@ public interface ShadowChunk
 	public List<Object> flush();
 
 	/**
-	 * Flush all pending modifications into packets to send
-	 *
-	 * @param forceFull
-	 *            force a full chunk send (resends the entire chunk)
-	 * @return the packets to send
-	 */
-	public List<Object> flush(boolean forceFull);
-
-	/**
 	 * Get the bitmask of the entire chunk.
 	 *
 	 * Due to performance costs, this bitmask may reflect non-flushed (pending)

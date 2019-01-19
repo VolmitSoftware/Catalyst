@@ -12,7 +12,6 @@ import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_12_R1.CraftChunkSnapshot;
 import org.bukkit.craftbukkit.v1_12_R1.block.CraftBlock;
 
-import com.volmit.catalyst.api.IDUtils;
 import com.volmit.catalyst.api.ShadowChunk;
 
 import net.minecraft.server.v1_12_R1.BiomeBase;
@@ -60,6 +59,7 @@ public class ShadowChunk12 implements ShadowChunk
 	public List<Object> flush()
 	{
 		List<Object> packets = new ArrayList<>();
+
 		int chunkMask = getEntireMask();
 		int modMask = getModifiedMask();
 
@@ -73,17 +73,6 @@ public class ShadowChunk12 implements ShadowChunk
 		dumpModifications();
 
 		return packets;
-	}
-
-	@Override
-	public List<Object> flush(boolean force)
-	{
-		if(force)
-		{
-			biomeModified = true;
-		}
-
-		return flush();
 	}
 
 	@Override
@@ -224,6 +213,7 @@ public class ShadowChunk12 implements ShadowChunk
 		c.tileEntities.putAll(actual.tileEntities);
 	}
 
+	@SuppressWarnings("deprecation")
 	private ChunkSnapshot snapshot(Chunk actual)
 	{
 		ChunkSnapshot s = new ChunkSnapshot();
@@ -235,7 +225,7 @@ public class ShadowChunk12 implements ShadowChunk
 			{
 				for(int j = 0; j < 256; j++)
 				{
-					s.a(i, j, k, Block.getByCombinedId(IDUtils.getCombined(snap.getBlockTypeId(i, j, k), snap.getBlockData(i, j, k))));
+					s.a(i, j, k, Block.getById(snap.getBlockTypeId(i, j, k)).fromLegacyData(snap.getBlockData(i, j, k)));
 				}
 			}
 		}
