@@ -43,6 +43,21 @@ public class ShadowChunk12 implements ShadowChunk
 	}
 
 	@Override
+	public void queueSection(int section)
+	{
+		if(nmsCopy.getSections()[section] != null)
+		{
+			modified[section] = true;
+		}
+	}
+
+	@Override
+	public void queueBiomes()
+	{
+		biomeModified = true;
+	}
+
+	@Override
 	public org.bukkit.Chunk getSource()
 	{
 		return chunk;

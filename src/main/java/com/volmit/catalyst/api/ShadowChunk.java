@@ -24,6 +24,16 @@ public interface ShadowChunk
 	public void rebase();
 
 	/**
+	 * Queue the given chunk section for resending
+	 */
+	public void queueSection(int section);
+
+	/**
+	 * Queue biomes for resending
+	 */
+	public void queueBiomes();
+
+	/**
 	 * Get the source chunk
 	 *
 	 * @return the source this shadow is... shadowing
