@@ -11,6 +11,22 @@ import org.bukkit.event.Listener;
 public interface CatalystHost extends PacketListener, Listener
 {
 	/**
+	 * Obtain a modifiable copy of a chunk in which light, blocks, and biomes can be
+	 * set. You cannot set skylight if the given chunks world does not actually have
+	 * a sky. Modifications are only tracked internally. A shadow copy is meant for
+	 * converting into packets.
+	 *
+	 * Each time you send packets, there is no need to re-copy a shadow chunk.
+	 * Simply use rebase() to re-copy from the real chunk. Any sent packets clear
+	 * the modified mask too.
+	 *
+	 * @param at
+	 *            the chunk to shadow copy
+	 * @return the shadow copy
+	 */
+	public ShadowChunk shadowCopy(Chunk at);
+
+	/**
 	 * Constructs a full chunk send packet based off the world, refreshing it if
 	 * there are modifications on the client's end of the chunk.
 	 *
@@ -30,26 +46,6 @@ public interface CatalystHost extends PacketListener, Listener
 	 * @return the packet
 	 */
 	public Object packetChunkUnload(int x, int z);
-
-	/**
-	 * Send a chunk map
-	 *
-	 * @param c
-	 *            the abstract chunk
-	 * @param copyTileEntities
-	 *            uses the reference chunk to copy and send tile entities
-	 * @return the packet
-	 */
-	public Object packetChunkMap(AbstractChunk c, Chunk copyTileEntities);
-
-	/**
-	 * Send a chunk map
-	 *
-	 * @param c
-	 *            the abstract chunk
-	 * @return the packet
-	 */
-	public Object packetChunkMap(AbstractChunk c);
 
 	/**
 	 * Send a block change packet

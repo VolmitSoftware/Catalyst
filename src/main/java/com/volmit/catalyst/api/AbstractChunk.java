@@ -653,6 +653,17 @@ public class AbstractChunk
 
 	public boolean isFull()
 	{
-		return full && isContinuous();
+		full = true;
+
+		for(ChunkSection i : sections)
+		{
+			if(i == null)
+			{
+				full = false;
+				break;
+			}
+		}
+
+		return full;
 	}
 }

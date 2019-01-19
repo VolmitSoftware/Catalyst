@@ -36,17 +36,33 @@ public class NMA
 			Catalyst.host.sendViewDistancedPacket(at, Catalyst.host.packetChunkUnload(at.getX(), at.getZ()));
 		}
 
-		public static void data(Player p, Chunk at, AbstractChunk c)
+		public static void data(Player p, ShadowChunk chunk)
 		{
-			if(Catalyst.host.canSee(at, p))
+			if(Catalyst.host.canSee(chunk.getSource(), p))
 			{
-				Catalyst.host.sendPacket(p, Catalyst.host.packetChunkMap(c));
+				for(Object i : chunk.flush())
+				{
+					Catalyst.host.sendPacket(p, i);
+				}
+			}
+
+			else
+			{
+				chunk.flush();
 			}
 		}
 
-		public static void data(Chunk at, AbstractChunk c)
+		public static void data(ShadowChunk chunk)
 		{
-			Catalyst.host.sendViewDistancedPacket(at, Catalyst.host.packetChunkMap(c));
+			for(Object i : chunk.flush())
+			{
+				Catalyst.host.sendViewDistancedPacket(chunk.getSource(), i);
+			}
+		}
+
+		public static ShadowChunk shadow(Chunk at)
+		{
+			return Catalyst.host.shadowCopy(at);
 		}
 	}
 }

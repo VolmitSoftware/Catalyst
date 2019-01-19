@@ -1,6 +1,5 @@
 package com.volmit.catalyst.hosts.v12;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +16,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.volmit.catalyst.api.AbstractChunk;
 import com.volmit.catalyst.api.CatalystHost;
 import com.volmit.catalyst.api.CatalystPacketListener;
 import com.volmit.catalyst.api.ChatMode;
 import com.volmit.catalyst.api.PacketHandler;
 import com.volmit.catalyst.api.PlayerSettings;
+import com.volmit.catalyst.api.ShadowChunk;
 import com.volmit.catalyst.plugin.CatalystPlugin;
 import com.volmit.catalyst.util.V;
 
@@ -31,7 +30,6 @@ import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.EntityHuman.EnumChatVisibility;
 import net.minecraft.server.v1_12_R1.EnumMainHand;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.Packet;
 import net.minecraft.server.v1_12_R1.PacketPlayInSettings;
 import net.minecraft.server.v1_12_R1.PacketPlayOutAnimation;
@@ -43,7 +41,6 @@ import net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_12_R1.PacketPlayOutTitle.EnumTitleAction;
 import net.minecraft.server.v1_12_R1.PacketPlayOutUnloadChunk;
-import net.minecraft.server.v1_12_R1.TileEntity;
 
 public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 {
@@ -60,70 +57,6 @@ public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 	public Object packetChunkFullSend(Chunk chunk)
 	{
 		return new PacketPlayOutMapChunk(((CraftChunk) chunk).getHandle(), 65535);
-	}
-
-	@Override
-	public Object packetChunkMap(AbstractChunk c, Chunk copyTileEntities)
-	{
-		List<NBTTagCompound> tags = new ArrayList<NBTTagCompound>();
-
-		for(BlockPosition i : ((CraftChunk) copyTileEntities).getHandle().tileEntities.keySet())
-		{
-			TileEntity tile = ((CraftChunk) copyTileEntities).getHandle().tileEntities.get(i);
-			if(c.hasSection(tile.getPosition().getY() >> 4))
-			{
-				NBTTagCompound tag = new NBTTagCompound();
-				tile.save(tag);
-				tags.add(tag);
-			}
-		}
-
-		PacketPlayOutMapChunk m = new PacketPlayOutMapChunk();
-		new V(m).set("a", c.getX());
-		new V(m).set("b", c.getZ());
-		new V(m).set("c", c.getBitMask());
-
-		try
-		{
-			new V(m).set("d", c.write());
-		}
-
-		catch(IllegalStateException | IOException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-
-		new V(m).set("e", tags);
-		new V(m).set("f", c.getBitMask() == 65535);
-
-		return m;
-	}
-
-	@Override
-	public Object packetChunkMap(AbstractChunk c)
-	{
-		List<NBTTagCompound> tags = new ArrayList<NBTTagCompound>();
-		PacketPlayOutMapChunk m = new PacketPlayOutMapChunk();
-		new V(m).set("a", c.getX());
-		new V(m).set("b", c.getZ());
-		new V(m).set("c", c.getBitMask());
-
-		try
-		{
-			new V(m).set("d", c.write());
-		}
-
-		catch(IllegalStateException | IOException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-
-		new V(m).set("e", tags);
-		new V(m).set("f", c.getBitMask() == 65535);
-
-		return m;
 	}
 
 	@Override
@@ -367,5 +300,11 @@ public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 	public PlayerSettings getSettings(Player p)
 	{
 		return playerSettings.get(p);
+	}
+
+	@Override
+	public ShadowChunk shadowCopy(Chunk at)
+	{
+		return new ShadowChunk12(at);
 	}
 }
