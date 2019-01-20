@@ -1,4 +1,4 @@
-package com.volmit.catalyst.hosts.v12;
+package com.volmit.catalyst.hosts.v92;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,20 +8,20 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_12_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_9_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_9_R1.block.CraftBlock;
 
 import com.volmit.catalyst.api.ShadowChunk;
 
-import net.minecraft.server.v1_12_R1.BiomeBase;
-import net.minecraft.server.v1_12_R1.Block;
-import net.minecraft.server.v1_12_R1.Chunk;
-import net.minecraft.server.v1_12_R1.ChunkSection;
-import net.minecraft.server.v1_12_R1.IBlockData;
-import net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk;
-import net.minecraft.server.v1_12_R1.PacketPlayOutUnloadChunk;
+import net.minecraft.server.v1_9_R1.BiomeBase;
+import net.minecraft.server.v1_9_R1.Block;
+import net.minecraft.server.v1_9_R1.Chunk;
+import net.minecraft.server.v1_9_R1.ChunkSection;
+import net.minecraft.server.v1_9_R1.IBlockData;
+import net.minecraft.server.v1_9_R1.PacketPlayOutMapChunk;
+import net.minecraft.server.v1_9_R1.PacketPlayOutUnloadChunk;
 
-public class ShadowChunk12 implements ShadowChunk
+public class ShadowChunk92 implements ShadowChunk
 {
 	private final Chunk actual;
 	private final org.bukkit.Chunk chunk;
@@ -30,7 +30,7 @@ public class ShadowChunk12 implements ShadowChunk
 	private final boolean[] modified;
 	private boolean biomeModified;
 
-	public ShadowChunk12(org.bukkit.Chunk chunk)
+	public ShadowChunk92(org.bukkit.Chunk chunk)
 	{
 		this.chunk = chunk;
 		actual = ((CraftChunk) chunk).getHandle();
@@ -133,7 +133,7 @@ public class ShadowChunk12 implements ShadowChunk
 			modMask = chunkMask;
 		}
 
-		packets.add(new PacketPlayOutMapChunk(nmsCopy, modMask));
+		packets.add(new PacketPlayOutMapChunk(nmsCopy, skylight, modMask));
 		dumpModifications();
 
 		return packets;
@@ -158,7 +158,7 @@ public class ShadowChunk12 implements ShadowChunk
 			modMask = chunkMask;
 		}
 
-		packets.add(new PacketPlayOutMapChunk(nmsCopy, modMask));
+		packets.add(new PacketPlayOutMapChunk(nmsCopy, skylight, modMask));
 		biomeModified = false;
 		modified[section] = false;
 
@@ -267,7 +267,6 @@ public class ShadowChunk12 implements ShadowChunk
 	@Override
 	public void setBlock(int x, int y, int z, int type, int data)
 	{
-		@SuppressWarnings("deprecation")
 		IBlockData d = Block.getById(type).fromLegacyData(data);
 		int section = y >> 4;
 

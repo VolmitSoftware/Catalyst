@@ -1,4 +1,4 @@
-package com.volmit.catalyst.hosts.v12;
+package com.volmit.catalyst.hosts.v11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,20 +8,20 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_12_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_11_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_11_R1.block.CraftBlock;
 
 import com.volmit.catalyst.api.ShadowChunk;
 
-import net.minecraft.server.v1_12_R1.BiomeBase;
-import net.minecraft.server.v1_12_R1.Block;
-import net.minecraft.server.v1_12_R1.Chunk;
-import net.minecraft.server.v1_12_R1.ChunkSection;
-import net.minecraft.server.v1_12_R1.IBlockData;
-import net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk;
-import net.minecraft.server.v1_12_R1.PacketPlayOutUnloadChunk;
+import net.minecraft.server.v1_11_R1.BiomeBase;
+import net.minecraft.server.v1_11_R1.Block;
+import net.minecraft.server.v1_11_R1.Chunk;
+import net.minecraft.server.v1_11_R1.ChunkSection;
+import net.minecraft.server.v1_11_R1.IBlockData;
+import net.minecraft.server.v1_11_R1.PacketPlayOutMapChunk;
+import net.minecraft.server.v1_11_R1.PacketPlayOutUnloadChunk;
 
-public class ShadowChunk12 implements ShadowChunk
+public class ShadowChunk11 implements ShadowChunk
 {
 	private final Chunk actual;
 	private final org.bukkit.Chunk chunk;
@@ -30,7 +30,7 @@ public class ShadowChunk12 implements ShadowChunk
 	private final boolean[] modified;
 	private boolean biomeModified;
 
-	public ShadowChunk12(org.bukkit.Chunk chunk)
+	public ShadowChunk11(org.bukkit.Chunk chunk)
 	{
 		this.chunk = chunk;
 		actual = ((CraftChunk) chunk).getHandle();
