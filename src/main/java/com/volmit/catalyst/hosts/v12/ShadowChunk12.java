@@ -43,6 +43,63 @@ public class ShadowChunk12 implements ShadowChunk
 	}
 
 	@Override
+	public boolean isFullModification()
+	{
+		return biomeModified;
+	}
+
+	@Override
+	public void rebaseSection(int section)
+	{
+		ChunkSection shadow = nmsCopy.getSections()[section];
+		ChunkSection sect = actual.getSections()[section];
+
+		if(sect == null && shadow == null)
+		{
+			return;
+		}
+
+		if(sect != null)
+		{
+			for(int i = 0; i < 16; i++)
+			{
+				for(int j = 0; j < 16; j++)
+				{
+					for(int k = 0; k < 16; k++)
+					{
+						if(shadow != null)
+						{
+							IBlockData ibd = sect.getBlocks().a(i, j, k);
+							int id = Block.getId(ibd.getBlock());
+							int data = ibd.getBlock().toLegacyData(ibd);
+							setBlock(i, j, k, id, data);
+							setBlockLight(i, j, k, sect.getEmittedLightArray().a(i, j, k));
+
+							if(skylight)
+							{
+								setSkyLight(i, j, k, sect.getSkyLightArray().a(i, j, k));
+							}
+						}
+
+						else
+						{
+							setBlock(i, j, k, 0, 0);
+							setBlockLight(i, j, k, 0);
+
+							if(skylight)
+							{
+								setSkyLight(i, j, k, 15);
+							}
+						}
+					}
+				}
+			}
+
+			modified[section] = true;
+		}
+	}
+
+	@Override
 	public void queueSection(int section)
 	{
 		if(nmsCopy.getSections()[section] != null)
@@ -66,8 +123,16 @@ public class ShadowChunk12 implements ShadowChunk
 	@Override
 	public void rebase()
 	{
+		biomeModified = !Arrays.equals(nmsCopy.getBiomeIndex(), actual.getBiomeIndex());
 		nmsCopy = copy(actual);
-		dumpModifications();
+
+		for(int i = 0; i < 16; i++)
+		{
+			if(nmsCopy.getSections()[i] != null)
+			{
+				modified[i] = true;
+			}
+		}
 	}
 
 	@Override
@@ -86,6 +151,32 @@ public class ShadowChunk12 implements ShadowChunk
 
 		packets.add(new PacketPlayOutMapChunk(nmsCopy, modMask));
 		dumpModifications();
+
+		return packets;
+	}
+
+	@Override
+	public List<Object> flushSection(int section)
+	{
+		List<Object> packets = new ArrayList<>();
+
+		if(!modified[section])
+		{
+			return packets;
+		}
+
+		int chunkMask = getEntireMask();
+		int modMask = getSingularMask(section);
+
+		if(biomeModified)
+		{
+			packets.add(new PacketPlayOutUnloadChunk(nmsCopy.locX, nmsCopy.locZ));
+			modMask = chunkMask;
+		}
+
+		packets.add(new PacketPlayOutMapChunk(nmsCopy, modMask));
+		biomeModified = false;
+		modified[section] = false;
 
 		return packets;
 	}
@@ -252,5 +343,20 @@ public class ShadowChunk12 implements ShadowChunk
 	{
 		Arrays.fill(modified, false);
 		biomeModified = false;
+	}
+
+	private int getSingularMask(int sec)
+	{
+		int bitMask = 0;
+
+		for(int section = 0; section < modified.length; section++)
+		{
+			if(sec == section)
+			{
+				bitMask += 1 << section;
+			}
+		}
+
+		return bitMask;
 	}
 }
