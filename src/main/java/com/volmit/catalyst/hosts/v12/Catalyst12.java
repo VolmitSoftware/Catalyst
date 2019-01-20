@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -15,7 +16,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
+import com.volmit.catalyst.api.AdvancementHolder;
+import com.volmit.catalyst.api.AdvancementHolder.FrameType;
 import com.volmit.catalyst.api.CatalystHost;
 import com.volmit.catalyst.api.CatalystPacketListener;
 import com.volmit.catalyst.api.ChatMode;
@@ -45,6 +49,31 @@ import net.minecraft.server.v1_12_R1.PacketPlayOutUnloadChunk;
 public class Catalyst12 extends CatalystPacketListener implements CatalystHost
 {
 	private Map<Player, PlayerSettings> playerSettings = new HashMap<>();
+
+	@Override
+	public void sendAdvancement(Player p, FrameType type, ItemStack is, String text)
+	{
+		AdvancementHolder a = new AdvancementHolder(UUID.randomUUID().toString());
+		a.withToast(true);
+		a.withDescription("?");
+		a.withFrame(type);
+		a.withAnnouncement(false);
+		a.withTitle(text);
+		a.withTrigger("minecraft:impossible");
+		a.withIcon(is.getData());
+		a.withBackground("minecraft:textures/blocks/bedrock.png");
+		a.loadAdvancement();
+		a.sendPlayer(p);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(CatalystPlugin.plugin, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				a.delete(p);
+			}
+		}, 1);
+	}
 
 	// START PACKETS
 	@Override

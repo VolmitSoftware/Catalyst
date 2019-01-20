@@ -7,9 +7,26 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+
+import com.volmit.catalyst.api.AdvancementHolder.FrameType;
 
 public interface CatalystHost extends PacketListener, Listener
 {
+	/**
+	 * Send an advancement like a notification
+	 *
+	 * @param p
+	 *            the player
+	 * @param type
+	 *            the frame type of the notification
+	 * @param is
+	 *            the item stack item to show
+	 * @param text
+	 *            the text to display
+	 */
+	public void sendAdvancement(Player p, FrameType type, ItemStack is, String text);
+
 	/**
 	 * Obtain a modifiable copy of a chunk in which light, blocks, and biomes can be
 	 * set. You cannot set skylight if the given chunks world does not actually have
