@@ -17,11 +17,27 @@ import org.bukkit.block.Biome;
  */
 public interface ShadowChunk
 {
+
+	/**
+	 * Check if the next flush is a full chunk section or not
+	 *
+	 * @return true if the next chunk packet will be a full send
+	 */
+	public boolean isFullModification();
+
 	/**
 	 * Rebase the shadow of the real chunk, essentially syncing this shadow to the
 	 * real chunk. This dumps any non-flushed modifications
 	 */
 	public void rebase();
+
+	/**
+	 * Rebase the shadow section from the real chunk section.
+	 *
+	 * @param section
+	 *            the section to rebase
+	 */
+	public void rebaseSection(int section);
 
 	/**
 	 * Queue the given chunk section for resending
@@ -46,6 +62,17 @@ public interface ShadowChunk
 	 * @return the packets to send
 	 */
 	public List<Object> flush();
+
+	/**
+	 * Flushes only the given section
+	 *
+	 * @param section
+	 *            the section to flush.
+	 * @return returns the section to flush. If the chunk has to send a full column,
+	 *         it will return a full flush instead. If nothing needs to be flushed
+	 *         in that section, an empty list is returned.
+	 */
+	public List<Object> flushSection(int section);
 
 	/**
 	 * Get the bitmask of the entire chunk.
