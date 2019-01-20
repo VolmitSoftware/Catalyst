@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Biome;
 import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_12_R1.CraftChunkSnapshot;
 import org.bukkit.craftbukkit.v1_12_R1.block.CraftBlock;
 
 import com.volmit.catalyst.api.ShadowChunk;
@@ -18,7 +17,6 @@ import net.minecraft.server.v1_12_R1.BiomeBase;
 import net.minecraft.server.v1_12_R1.Block;
 import net.minecraft.server.v1_12_R1.Chunk;
 import net.minecraft.server.v1_12_R1.ChunkSection;
-import net.minecraft.server.v1_12_R1.ChunkSnapshot;
 import net.minecraft.server.v1_12_R1.IBlockData;
 import net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk;
 import net.minecraft.server.v1_12_R1.PacketPlayOutUnloadChunk;
@@ -298,10 +296,16 @@ public class ShadowChunk12 implements ShadowChunk
 
 	private Chunk copy(Chunk actual)
 	{
-		ChunkSnapshot snap = snapshot(actual);
-		Chunk c = new Chunk(actual.world, snap, actual.locX, actual.locZ);
+		Chunk c = new Chunk(actual.world, actual.locX, actual.locZ);
+
+		for(int i = 0; i < 16; i++)
+		{
+			rebaseSection(i);
+		}
+
 		copyTileEntities(actual, c);
 		copyBiomes(actual, c);
+		dumpModifications();
 
 		return c;
 	}
@@ -317,26 +321,6 @@ public class ShadowChunk12 implements ShadowChunk
 	private void copyTileEntities(Chunk actual, Chunk c)
 	{
 		c.tileEntities.putAll(actual.tileEntities);
-	}
-
-	@SuppressWarnings("deprecation")
-	private ChunkSnapshot snapshot(Chunk actual)
-	{
-		ChunkSnapshot s = new ChunkSnapshot();
-		CraftChunkSnapshot snap = (CraftChunkSnapshot) actual.bukkitChunk.getChunkSnapshot(false, false, false);
-
-		for(int i = 0; i < 16; i++)
-		{
-			for(int k = 0; k < 16; k++)
-			{
-				for(int j = 0; j < 256; j++)
-				{
-					s.a(i, j, k, Block.getById(snap.getBlockTypeId(i, j, k)).fromLegacyData(snap.getBlockData(i, j, k)));
-				}
-			}
-		}
-
-		return s;
 	}
 
 	private void dumpModifications()
