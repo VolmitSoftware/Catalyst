@@ -20,14 +20,14 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.volmit.catalyst.api.AdvancementHolder;
-import com.volmit.catalyst.api.AdvancementHolder.FrameType;
 import com.volmit.catalyst.api.CatalystHost;
-import com.volmit.catalyst.api.CatalystPacketListener;
 import com.volmit.catalyst.api.ChatMode;
+import com.volmit.catalyst.api.FrameType;
 import com.volmit.catalyst.api.PacketHandler;
 import com.volmit.catalyst.api.PlayerSettings;
 import com.volmit.catalyst.api.ShadowChunk;
+import com.volmit.catalyst.nmp.AdvancementHolder;
+import com.volmit.catalyst.nmp.CatalystPacketListener;
 import com.volmit.catalyst.plugin.CatalystPlugin;
 import com.volmit.catalyst.util.V;
 

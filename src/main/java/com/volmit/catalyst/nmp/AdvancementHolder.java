@@ -1,4 +1,4 @@
-package com.volmit.catalyst.api;
+package com.volmit.catalyst.nmp;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -26,6 +26,7 @@ import org.json.simple.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.volmit.catalyst.api.FrameType;
 import com.volmit.catalyst.plugin.CatalystPlugin;
 
 import net.minecraft.server.v1_12_R1.Item;
@@ -53,25 +54,6 @@ public class AdvancementHolder
 		}
 
 		this.holders.add(api);
-	}
-
-	public static enum FrameType
-	{
-		CHALLANGE("challenge"),
-		GOAL("goal"),
-		TASK("task");
-
-		private String str;
-
-		FrameType(String str)
-		{
-			this.str = str;
-		}
-
-		public String getName()
-		{
-			return this.str;
-		}
 	}
 
 	public static enum AdvancementBackground

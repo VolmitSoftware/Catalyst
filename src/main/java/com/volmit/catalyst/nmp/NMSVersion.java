@@ -1,4 +1,4 @@
-package com.volmit.catalyst.api;
+package com.volmit.catalyst.nmp;
 
 import java.util.ArrayList;
 import java.util.List;

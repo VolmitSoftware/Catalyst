@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.volmit</groupId>
 	<artifactId>Catalyst</artifactId>
-	<version>1.0</version>
+	<version>1.0.3</version>
 	<name>Catalyst</name>
 	<description>A collection of NMS and Packet tools for doing edgy shit</description>
 	<properties>
@@ -34,6 +34,19 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2</version>
@@ -60,6 +73,11 @@
 		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+			<groupId>com.volmit</groupId>
+			<artifactId>CatalystAPI</artifactId>
+			<version>1.0.3</version>
+		</dependency>
 		<!-- Spigot API -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>

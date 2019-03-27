@@ -1,4 +1,4 @@
-package com.volmit.catalyst.api;
+package com.volmit.catalyst.nmp;
 
 import org.bukkit.Location;
 

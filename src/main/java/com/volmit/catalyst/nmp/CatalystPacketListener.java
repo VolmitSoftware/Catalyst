@@ -1,4 +1,4 @@
-package com.volmit.catalyst.api;
+package com.volmit.catalyst.nmp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
+import com.volmit.catalyst.api.PacketHandler;
+import com.volmit.catalyst.api.PacketListener;
 import com.volmit.catalyst.plugin.CatalystPlugin;
 import com.volmit.catalyst.util.TinyProtocol;
 

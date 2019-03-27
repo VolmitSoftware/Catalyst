@@ -1,5 +1,6 @@
-package com.volmit.catalyst.api;
+package com.volmit.catalyst.nmp;
 
+import com.volmit.catalyst.api.CatalystHost;
 import com.volmit.catalyst.hosts.v10.Catalyst10;
 import com.volmit.catalyst.hosts.v11.Catalyst11;
 import com.volmit.catalyst.hosts.v12.Catalyst12;

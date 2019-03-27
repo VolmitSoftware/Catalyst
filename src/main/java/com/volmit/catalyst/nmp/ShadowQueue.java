@@ -1,4 +1,4 @@
-package com.volmit.catalyst.api;
+package com.volmit.catalyst.nmp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +13,10 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import com.volmit.catalyst.api.NMP;
+import com.volmit.catalyst.api.PacketBuffer;
+import com.volmit.catalyst.api.ShadowChunk;
 
 public class ShadowQueue
 {

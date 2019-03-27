@@ -10,7 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.volmit.catalyst.api.Catalyst;
+import com.volmit.catalyst.api.NMP;
+import com.volmit.catalyst.nmp.Catalyst;
+import com.volmit.catalyst.nmp.NMSVersion;
 
 public class CatalystPlugin extends JavaPlugin implements Listener
 {
@@ -21,39 +23,20 @@ public class CatalystPlugin extends JavaPlugin implements Listener
 	public void onEnable()
 	{
 		plugin = this;
-		JarScannerSpecial s = new JarScannerSpecial(getFile(), "com.volmit.catalyst.plugin.tests");
-
-		try
-		{
-			s.scan();
-
-			for(Class<?> i : s.getClasses())
-			{
-				if(Test.class.isAssignableFrom(i))
-				{
-					try
-					{
-						tests.add((Test) i.getConstructor().newInstance());
-					}
-
-					catch(Throwable e)
-					{
-
-					}
-				}
-			}
-		}
-
-		catch(Throwable e)
-		{
-			e.printStackTrace();
-		}
-
 		Bukkit.getPluginManager().registerEvents(this, this);
+		Catalyst.host.start();
+		NMP.host = Catalyst.host;
+		NMSVersion v = NMSVersion.current();
 
-		// ------------------------ DO NOT FUCKING TOUCH
-		/* DO NOT FUCKING TOUCH */ Catalyst.host.start(); // DO NOT FUCKING TOUCH
-		// ------------------------ DO NOT FUCKING TOUCH
+		if(v != null)
+		{
+			getLogger().info("Selected " + NMSVersion.current().name());
+		}
+
+		else
+		{
+			getLogger().info("Could not find a suitable binder for this server version!");
+		}
 	}
 
 	@Override
